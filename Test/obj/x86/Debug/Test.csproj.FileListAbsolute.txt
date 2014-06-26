@@ -1,0 +1,12 @@
+C:\Users\Rush\Desktop\H_DataAssembly-master\Test\bin\Debug\Test.exe.config
+C:\Users\Rush\Desktop\H_DataAssembly-master\Test\bin\Debug\Test.exe
+C:\Users\Rush\Desktop\H_DataAssembly-master\Test\bin\Debug\Test.pdb
+C:\Users\Rush\Desktop\H_DataAssembly-master\Test\bin\Debug\DataLibraries.dll
+C:\Users\Rush\Desktop\H_DataAssembly-master\Test\bin\Debug\TestModel.dll
+C:\Users\Rush\Desktop\H_DataAssembly-master\Test\bin\Debug\System.Data.SQLite.dll
+C:\Users\Rush\Desktop\H_DataAssembly-master\Test\bin\Debug\MySql.Data.dll
+C:\Users\Rush\Desktop\H_DataAssembly-master\Test\bin\Debug\DataLibraries.pdb
+C:\Users\Rush\Desktop\H_DataAssembly-master\Test\bin\Debug\TestModel.pdb
+C:\Users\Rush\Desktop\H_DataAssembly-master\Test\obj\x86\Debug\Test.csprojResolveAssemblyReference.cache
+C:\Users\Rush\Desktop\H_DataAssembly-master\Test\obj\x86\Debug\Test.exe
+C:\Users\Rush\Desktop\H_DataAssembly-master\Test\obj\x86\Debug\Test.pdb
