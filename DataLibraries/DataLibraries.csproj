@@ -48,6 +48,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AopFoUpdate\AopAttribute.cs" />
+    <Compile Include="AopFoUpdate\AopProxy.cs" />
     <Compile Include="DBModelAttribute\BaseModel.cs" />
     <Compile Include="DBModelAttribute\SqlColumnAttribute.cs" />
     <Compile Include="DBModelAttribute\SqlTableAttribute.cs" />

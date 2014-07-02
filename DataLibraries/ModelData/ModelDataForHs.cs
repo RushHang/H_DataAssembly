@@ -16,6 +16,10 @@ namespace DataLibraries.ModelData
 
         public string GetByIdSql { get; set; }
 
+        public string TableName { get; set; }
+
+        public char Identification { get; set; }
+
         /// <summary>
         /// model所有属性
         /// </summary>

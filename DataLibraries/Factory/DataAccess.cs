@@ -46,7 +46,7 @@ namespace DataLibraries
             char dent = Identification;
             foreach (Type t in types)
             {
-                if (t.GetInterface(typeof(BaseModel).Name, true) != null)
+                if (t.BaseType.FullName == typeof(BaseModel).FullName)
                 {
                     modelDic.Add(t, SplitJointSql.BuildSql(t, dent));
                 }

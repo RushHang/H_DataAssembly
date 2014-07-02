@@ -18,4 +18,23 @@ namespace TestModel
         [SqlColumn("IsText", true)]
         public bool IsText { get; set; }
     }
+
+    [SqlTable("report_dept")]
+    public class REPORT_DEPTModel : BaseModel
+    {
+        [SqlColumn("ID", true, true, true)]
+        public string ID { get; set; }
+
+        [SqlColumn("Type_ID")]
+        public string Type_ID { get; set; }
+
+        [SqlColumn("dept_id")]
+        public string DEPT_ID { get; set; }
+
+        [SqlColumn("report_year")]
+        public string REPORT_YEAR { get; set; }
+
+        [SqlColumn("report_name")]
+        public string REPORT_NAME { get; set; }
+    }
 }

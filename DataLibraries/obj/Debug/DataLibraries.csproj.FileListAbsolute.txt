@@ -5,3 +5,10 @@ C:\Users\Rush\Desktop\H_DataAssembly-master\DataLibraries\bin\Debug\System.Data.
 C:\Users\Rush\Desktop\H_DataAssembly-master\DataLibraries\obj\Debug\DataLibraries.csprojResolveAssemblyReference.cache
 C:\Users\Rush\Desktop\H_DataAssembly-master\DataLibraries\obj\Debug\DataLibraries.dll
 C:\Users\Rush\Desktop\H_DataAssembly-master\DataLibraries\obj\Debug\DataLibraries.pdb
+C:\Users\Rush\Documents\GitHub\H_DataAssembly\DataLibraries\bin\Debug\DataLibraries.dll
+C:\Users\Rush\Documents\GitHub\H_DataAssembly\DataLibraries\bin\Debug\DataLibraries.pdb
+C:\Users\Rush\Documents\GitHub\H_DataAssembly\DataLibraries\bin\Debug\MySql.Data.dll
+C:\Users\Rush\Documents\GitHub\H_DataAssembly\DataLibraries\bin\Debug\System.Data.SQLite.dll
+C:\Users\Rush\Documents\GitHub\H_DataAssembly\DataLibraries\obj\Debug\DataLibraries.csprojResolveAssemblyReference.cache
+C:\Users\Rush\Documents\GitHub\H_DataAssembly\DataLibraries\obj\Debug\DataLibraries.dll
+C:\Users\Rush\Documents\GitHub\H_DataAssembly\DataLibraries\obj\Debug\DataLibraries.pdb

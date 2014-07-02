@@ -4,6 +4,8 @@ using System.Linq;
 using DataLibraries.ModelData;
 using System.Data;
 using MySql.Data.MySqlClient;
+using DataLibraries.DBModelAttribute;
+using System.Text;
 
 namespace DataLibraries.MySql
 {
@@ -41,7 +43,7 @@ namespace DataLibraries.MySql
 
         #endregion
 
-        public bool Insere(object model)
+        public bool Insere(BaseModel model)
         {
             ModelDataForHs mdh = ModeDIC[model.GetType()];
 
@@ -78,24 +80,32 @@ namespace DataLibraries.MySql
                 automaticallys[0].SetValue.Set(model, pkid);
                 Get(model);
             }
+            
             return true;
         }
 
-        public bool Update(object model)
+        public bool Update(BaseModel model)
         {
+            if (string.IsNullOrEmpty(model.ChangeProperty))
+            {
+                return true;
+            }
             ModelDataForHs mdh = ModeDIC[model.GetType()];
 
             List<IDataParameter> parms = new List<IDataParameter>();
+            StringBuilder updateitem = new StringBuilder();
             foreach (ModelPropertyAndDelegate item in mdh.Properys)
             {
                 IDataParameter parm = new MySqlParameter();
-                if (item.IsAutomatically == false&&item.IsPrimaryKey==false)
+                if (item.IsAutomatically == false && item.IsPrimaryKey == false && model.ChangeProperty.Contains(item.PropertyName))
                 {
+                    updateitem.Append(string.Format("{0}={1},", item.ColumnName, mdh.Identification + item.ColumnName));
                     parm.ParameterName = item.ColumnName;
                     parm.Value = item.GetValue.Get(model);
                     parms.Add(parm);
                 }
             }
+            updateitem.Remove(updateitem.Length - 1, 1);
 
             ModelPropertyAndDelegate[] pks;
             try
@@ -106,22 +116,32 @@ namespace DataLibraries.MySql
             {
                 throw new Exception("未设置主键，无法通过此方法修改！");
             }
+            string pkstring = "";
+            int i = 0;
             foreach (ModelPropertyAndDelegate item in pks)
             {
+                if (i == 0)
+                {
+                    pkstring += string.Format(" where {0}={1}", item.ColumnName, mdh.Identification + item.ColumnName);
+                }
+                else
+                {
+                    pkstring += string.Format(" and {0}={1}", item.ColumnName, mdh.Identification + item.ColumnName);
+                }
                 IDataParameter parm = new MySqlParameter();
                 parm.ParameterName = item.ColumnName;
                 parm.Value = item.GetValue.Get(model);
                 parms.Add(parm);
             }
 
-            if (ExecuteNonQuery(mdh.UpdateSql, parms.ToArray()) <= 0)
+            if (ExecuteNonQuery(string.Format("update {0} set {1}", mdh.TableName, updateitem.ToString() + pkstring), parms.ToArray()) <= 0)
             {
                 return false;
             }
             return true;
         }
 
-        public bool Delete(object model)
+        public bool Delete(BaseModel model)
         {
             ModelDataForHs mdh = ModeDIC[model.GetType()];
 
@@ -149,7 +169,7 @@ namespace DataLibraries.MySql
             return true;
         }
 
-        public T Get<T>(object id) where T : new()
+        public T Get<T>(object id) where T : BaseModel, new()
         {
             T model = new T();
             ModelDataForHs mdh = ModeDIC[typeof(T)];
@@ -179,11 +199,11 @@ namespace DataLibraries.MySql
                     }
                 }
             }
-
+            model.ClearState();
             return model;
         }
 
-        private void Get(object model)
+        private void Get(BaseModel model)
         {
             ModelDataForHs mdh = ModeDIC[model.GetType()];
             List<IDataParameter> list = new List<IDataParameter>();
@@ -218,6 +238,7 @@ namespace DataLibraries.MySql
                     }
                 }
             }
+            model.ClearState();
         }
 
         public DataTable QueryDt(string sql, params IDataParameter[] args)
@@ -244,7 +265,7 @@ namespace DataLibraries.MySql
             return ds.Tables[0];
         }
 
-        public IList<T> QueryList<T>(string sql, params IDataParameter[] args) where T : new()
+        public IList<T> QueryList<T>(string sql, params IDataParameter[] args) where T : BaseModel, new()
         {
             IList<T> list = new List<T>();
 
@@ -262,6 +283,7 @@ namespace DataLibraries.MySql
                         }
                         catch { }
                     }
+                    model.ClearState();
                     list.Add(model);
                 }
             }

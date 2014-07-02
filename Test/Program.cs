@@ -44,14 +44,12 @@ namespace Test
             //TestUser user = new TestUser();
             //user.UserName = "tfg";
             //oper.Insere(user);
-            TreeModel tmodel = new TreeModel();
-            tmodel.Id = Guid.NewGuid().ToString("N");
-            tmodel.Content = "my test data";
-            tmodel.IsText = true;
-            oper.Insere(tmodel);
-            IList<TreeModel> lists = oper.QueryList<TreeModel>("select Id,Content from Tree");
-            //IList<string> sl = dt.ToList<String>();
-            DataTable dt = lists.ToDataTable<TreeModel>();
+            REPORT_DEPTModel tmodel = oper.Get<REPORT_DEPTModel>("3a2e388bb02446e8b2579b9e854641d7");
+            tmodel.Type_ID = "3";
+            oper.Update(tmodel);
+            //IList<TreeModel> lists = oper.QueryList<TreeModel>("select Id,Content from Tree");
+            ////IList<string> sl = dt.ToList<String>();
+            //DataTable dt = lists.ToDataTable<TreeModel>();
 
 
 
@@ -67,7 +65,7 @@ namespace Test
     public class Test1
     {
         public int Id { get; set; }
-        
+
 
     }
 }

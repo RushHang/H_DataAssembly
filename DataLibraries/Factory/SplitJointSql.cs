@@ -105,8 +105,8 @@ namespace DataLibraries.Factory
             Data.GetByIdSql += pkstring;
             Data.DeleteSql = string.Format("delete from {0}", tablename + pkstring);
             Data.UpdateSql = string.Format("update {0} set {1}", tablename, updateitem.ToString() + pkstring);
-
-
+            Data.TableName = tablename;
+            Data.Identification = identification;
             return Data;
         }
 

@@ -4,6 +4,8 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using DataLibraries.ModelData;
+using DataLibraries.DBModelAttribute;
+using System.Text;
 
 namespace DataLibraries.MSSQL
 {
@@ -39,7 +41,7 @@ namespace DataLibraries.MSSQL
 
         #endregion
 
-        public bool Insere(object model)
+        public bool Insere(BaseModel model)
         {
             ModelDataForHs mdh = ModeDIC[model.GetType()];
 
@@ -91,24 +93,33 @@ namespace DataLibraries.MSSQL
                 }
 
             }
+            model.ClearState();
             return true;
         }
 
-        public bool Update(object model)
+        public bool Update(BaseModel model)
         {
+            if (string.IsNullOrEmpty(model.ChangeProperty))
+            {
+                return true;
+            }
+           
             ModelDataForHs mdh = ModeDIC[model.GetType()];
-
+           
             List<IDataParameter> parms = new List<IDataParameter>();
+            StringBuilder updateitem = new StringBuilder();
             foreach (ModelPropertyAndDelegate item in mdh.Properys)
             {
                 IDataParameter parm = new SqlParameter();
-                if (item.IsAutomatically == false && item.IsPrimaryKey == false)
+                if (item.IsAutomatically == false && item.IsPrimaryKey == false&&model.ChangeProperty.Contains(item.PropertyName))
                 {
+                    updateitem.Append(string.Format("{0}={1},", item.ColumnName, mdh.Identification + item.ColumnName));
                     parm.ParameterName = item.ColumnName;
                     parm.Value = item.GetValue.Get(model);
                     parms.Add(parm);
                 }
             }
+            updateitem.Remove(updateitem.Length - 1, 1);
 
             ModelPropertyAndDelegate[] pks;
             try
@@ -119,22 +130,33 @@ namespace DataLibraries.MSSQL
             {
                 throw new Exception("未设置主键，无法通过此方法修改！");
             }
+            string pkstring="";
+            int i = 0;
             foreach (ModelPropertyAndDelegate item in pks)
             {
+                if (i == 0)
+                {
+                    pkstring += string.Format(" where {0}={1}", item.ColumnName, mdh.Identification + item.ColumnName);
+                }
+                else
+                {
+                    pkstring += string.Format(" and {0}={1}", item.ColumnName, mdh.Identification + item.ColumnName);
+                }
                 IDataParameter parm = new SqlParameter();
                 parm.ParameterName = item.ColumnName;
                 parm.Value = item.GetValue.Get(model);
                 parms.Add(parm);
+                i++;
             }
 
-            if (ExecuteNonQuery(mdh.UpdateSql, parms.ToArray()) <= 0)
+            if (ExecuteNonQuery(string.Format("update {0} set {1}", mdh.TableName, updateitem.ToString() + pkstring), parms.ToArray()) <= 0)
             {
                 return false;
             }
             return true;
         }
 
-        public bool Delete(object model)
+        public bool Delete(BaseModel model)
         {
             ModelDataForHs mdh = ModeDIC[model.GetType()];
 
@@ -162,7 +184,7 @@ namespace DataLibraries.MSSQL
             return true;
         }
 
-        public T Get<T>(object id) where T : new()
+        public T Get<T>(object id) where T : BaseModel, new()
         {
             T model = new T();
             ModelDataForHs mdh = ModeDIC[typeof(T)];
@@ -192,7 +214,7 @@ namespace DataLibraries.MSSQL
                     }
                 }
             }
-
+            model.ClearState();
             return model;
         }
 
@@ -220,7 +242,7 @@ namespace DataLibraries.MSSQL
             return ds.Tables[0];
         }
 
-        public IList<T> QueryList<T>(string sql, params IDataParameter[] args) where T : new()
+        public IList<T> QueryList<T>(string sql, params IDataParameter[] args) where T : BaseModel, new()
         {
             IList<T> list = new List<T>();
 
@@ -238,6 +260,7 @@ namespace DataLibraries.MSSQL
                         }
                         catch { }
                     }
+                    model.ClearState();
                     list.Add(model);
                 }
             }
