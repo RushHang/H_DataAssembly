@@ -18,6 +18,9 @@ namespace DataLibraries.Oracle
             ModeDIC = modeDIC;
             _Command = _Connection.CreateCommand();
         }
+
+
+        public IDictionary<Type, ModelDataForHs> ModeDIC { get; set; }
         #region 私有对象
 
         private OracleConnection _Connection;
@@ -25,8 +28,6 @@ namespace DataLibraries.Oracle
         private OracleCommand _Command;
 
         private OracleTransaction _Transaction;
-
-        private IDictionary<Type, ModelDataForHs> ModeDIC;
 
         private void AddBasic(params IDataParameter[] pams)
         {
@@ -430,5 +431,17 @@ namespace DataLibraries.Oracle
         {
             return new OracleParameter();
         }
+
+
+
+        #region IDBOperate 成员
+
+
+        public IList<T> QueryList<T>(int pageIndex, int pageSize, out int count, string[] where, params IDataParameter[] parms) where T : BaseModel, new()
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
     }
 }

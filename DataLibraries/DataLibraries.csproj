@@ -55,6 +55,7 @@
     <Compile Include="DBModelAttribute\SqlTableAttribute.cs" />
     <Compile Include="Delegate\TryParseDelegate.cs" />
     <Compile Include="Delegate\TryPasrse.cs" />
+    <Compile Include="Expand\DataHelp.cs" />
     <Compile Include="Expand\OperateHelp.cs" />
     <Compile Include="IDBOperate.cs" />
     <Compile Include="DbType\DBTypes.cs" />

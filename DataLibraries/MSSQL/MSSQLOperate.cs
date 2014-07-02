@@ -17,6 +17,8 @@ namespace DataLibraries.MSSQL
             ModeDIC = modeDIC;
             _Command = _Connection.CreateCommand();
         }
+
+        public IDictionary<Type, ModelDataForHs> ModeDIC { get; set; }
         #region 私有对象
 
         private SqlConnection _Connection;
@@ -25,7 +27,6 @@ namespace DataLibraries.MSSQL
 
         private SqlTransaction _Transaction;
 
-        private IDictionary<Type, ModelDataForHs> ModeDIC;
 
         private void AddBasic(params IDataParameter[] pams)
         {
@@ -103,15 +104,15 @@ namespace DataLibraries.MSSQL
             {
                 return true;
             }
-           
+
             ModelDataForHs mdh = ModeDIC[model.GetType()];
-           
+
             List<IDataParameter> parms = new List<IDataParameter>();
             StringBuilder updateitem = new StringBuilder();
             foreach (ModelPropertyAndDelegate item in mdh.Properys)
             {
                 IDataParameter parm = new SqlParameter();
-                if (item.IsAutomatically == false && item.IsPrimaryKey == false&&model.ChangeProperty.Contains(item.PropertyName))
+                if (item.IsAutomatically == false && item.IsPrimaryKey == false && model.ChangeProperty.Contains(item.PropertyName))
                 {
                     updateitem.Append(string.Format("{0}={1},", item.ColumnName, mdh.Identification + item.ColumnName));
                     parm.ParameterName = item.ColumnName;
@@ -130,7 +131,7 @@ namespace DataLibraries.MSSQL
             {
                 throw new Exception("未设置主键，无法通过此方法修改！");
             }
-            string pkstring="";
+            string pkstring = "";
             int i = 0;
             foreach (ModelPropertyAndDelegate item in pks)
             {
@@ -385,6 +386,52 @@ namespace DataLibraries.MSSQL
         public IDataParameter CreateParameter()
         {
             return new SqlParameter();
+        }
+
+
+        public IList<T> QueryList<T>(int pageIndex, int pageSize, out int count, string[] where, params IDataParameter[] parms) where T : BaseModel, new()
+        {
+            IList<T> list = new List<T>();
+
+            ModelDataForHs mdh = ModeDIC[typeof(T)];
+            ModelPropertyAndDelegate pk;
+            try
+            {
+                pk = mdh.Properys.Where(x => x.IsPrimaryKey == true).First();
+            }
+            catch
+            {
+                throw new Exception("未设置主键，无法通过此方法查询！");
+            }
+            string sql = "";
+            string conditions = where.ArrayToString(" and ");
+            if (pageSize == 0)
+            { sql = mdh.SelectAllSql + " " + conditions; }
+            else
+            {
+                string fengy = string.Format(" number between {0} and {1}", pageSize * pageIndex + 1, pageSize * (pageIndex + 1));
+                sql = string.Format("select * from ({0}) trs {1}", mdh.SelectAllSql.Replace("from", ",ROW_NUMBER() OVER (ORDER BY " + pk.ColumnName + ") as number from"), conditions == null ? " where " + fengy : " where " + conditions + " and " + fengy);
+            }
+            count = Convert.ToInt32(ExecuteScalar(string.Format("select count(1) from {0} {1}", mdh.TableName, conditions), parms));
+            using (DataTable dt = QueryDt(sql, parms))
+            {
+                foreach (DataRow dr in dt.Rows)
+                {
+                    T model = new T();
+                    foreach (ModelPropertyAndDelegate item in mdh.Properys)
+                    {
+                        try
+                        {
+                            item.SetValue.Set(model, dr[item.ColumnName]);
+                        }
+                        catch { }
+                    }
+                    model.ClearState();
+                    list.Add(model);
+                }
+            }
+
+            return list;
         }
     }
 }

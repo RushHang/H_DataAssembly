@@ -19,6 +19,10 @@ namespace DataLibraries.MySql
             ModeDIC = modeDIC;
             _Command = _Connection.CreateCommand();
         }
+
+
+        public IDictionary<Type, ModelDataForHs> ModeDIC { get; set; }
+
         #region 私有对象
 
         private MySqlConnection _Connection;
@@ -26,8 +30,6 @@ namespace DataLibraries.MySql
         private MySqlCommand _Command;
 
         private MySqlTransaction _Transaction;
-
-        private IDictionary<Type, ModelDataForHs> ModeDIC;
 
         private void AddBasic(params IDataParameter[] pams)
         {
@@ -408,6 +410,11 @@ namespace DataLibraries.MySql
         public IDataParameter CreateParameter()
         {
             return new MySqlParameter();
+        }
+
+        public IList<T> QueryList<T>(int pageIndex, int pageSize, out int count, string[] where, params IDataParameter[] parms) where T : BaseModel, new()
+        {
+            throw new NotImplementedException();
         }
     }
 }

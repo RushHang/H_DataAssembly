@@ -45,15 +45,18 @@ namespace Test
             //user.UserName = "tfg";
             //oper.Insere(user);
             REPORT_DEPTModel tmodel = oper.Get<REPORT_DEPTModel>("3a2e388bb02446e8b2579b9e854641d7");
-            tmodel.Type_ID = "3";
+            tmodel.Type_ID = "5";
+            tmodel.REPORT_NAME = "棉毛裤";
             oper.Update(tmodel);
+            int count = 0;
+            IList<REPORT_DEPTModel> list = oper.QueryList<REPORT_DEPTModel>(0, 10, out count,null);
             //IList<TreeModel> lists = oper.QueryList<TreeModel>("select Id,Content from Tree");
-            ////IList<string> sl = dt.ToList<String>();
+            //IList<string> sl = dt.ToList<String>();
             //DataTable dt = lists.ToDataTable<TreeModel>();
 
 
 
-            Console.Read();
+            //Console.Read();
         }
 
         static object ms()

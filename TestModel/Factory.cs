@@ -19,7 +19,7 @@ namespace TestModel
                 {
                     da = new DataAccess();
                     da.DataType = DBTypes.MsSql;
-                    da.Connstring = @"data source=192.168.0.161;user id=sa;password=sicsoft;database=JXHG_NEWSWEB;";
+                    da.Connstring = @"data source=RUSH-PC\MSSQL2008R2;user id=sa;password=hj1992;database=JXHG_NEWSWEB;";
                     da.AddModels(Assembly.GetExecutingAssembly().GetTypes());
                     da.ConnCount = 20;
                 }
