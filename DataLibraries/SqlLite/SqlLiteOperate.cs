@@ -418,7 +418,24 @@ namespace DataLibraries.SqlLite
 
         public IList<T> QueryList<T>(int pageIndex, int pageSize, out int count, string[] where, params IDataParameter[] parms) where T : BaseModel, new()
         {
-            throw new NotImplementedException();
+            IList<T> list = new List<T>();
+
+            ModelDataForHs mdh = ModeDIC[typeof(T)];
+
+            string sql = "";
+            
+            string conditions = where.ArrayToString(" and ");
+            if (pageSize == 0)
+            { sql = mdh.SelectAllSql + " where 1=1 " + conditions; }
+            else
+            {
+                pageIndex--;
+                sql = string.Format("{0} where 1=1 {1} limit {2} offset {3}", mdh.SelectAllSql, conditions, pageSize, pageIndex * pageSize);
+            }
+            count = Convert.ToInt32(ExecuteScalar(string.Format("select count(1) from {0} {1}", mdh.TableName, conditions), parms));
+
+
+            return QueryList<T>(sql, parms);
         }
 
         #endregion

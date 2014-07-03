@@ -257,7 +257,8 @@ namespace DataLibraries.MSSQL
                     {
                         try
                         {
-                            item.SetValue.Set(model, dr[item.ColumnName]);
+                            if (dr[item.ColumnName] != null)
+                            { item.SetValue.Set(model, dr[item.ColumnName]); }
                         }
                         catch { }
                     }
@@ -404,34 +405,20 @@ namespace DataLibraries.MSSQL
                 throw new Exception("未设置主键，无法通过此方法查询！");
             }
             string sql = "";
+            
             string conditions = where.ArrayToString(" and ");
             if (pageSize == 0)
-            { sql = mdh.SelectAllSql + " " + conditions; }
+            { sql = mdh.SelectAllSql + " where 1=1 " + conditions; }
             else
             {
+                pageIndex--;
                 string fengy = string.Format(" number between {0} and {1}", pageSize * pageIndex + 1, pageSize * (pageIndex + 1));
-                sql = string.Format("select * from ({0}) trs {1}", mdh.SelectAllSql.Replace("from", ",ROW_NUMBER() OVER (ORDER BY " + pk.ColumnName + ") as number from"), conditions == null ? " where " + fengy : " where " + conditions + " and " + fengy);
+                sql = string.Format("select * from ({0} where 1=1 {1}) trs where {2}", mdh.SelectAllSql.Replace("from", ",ROW_NUMBER() OVER (ORDER BY " + pk.ColumnName + ") as number from"), conditions, fengy);
             }
             count = Convert.ToInt32(ExecuteScalar(string.Format("select count(1) from {0} {1}", mdh.TableName, conditions), parms));
-            using (DataTable dt = QueryDt(sql, parms))
-            {
-                foreach (DataRow dr in dt.Rows)
-                {
-                    T model = new T();
-                    foreach (ModelPropertyAndDelegate item in mdh.Properys)
-                    {
-                        try
-                        {
-                            item.SetValue.Set(model, dr[item.ColumnName]);
-                        }
-                        catch { }
-                    }
-                    model.ClearState();
-                    list.Add(model);
-                }
-            }
 
-            return list;
+
+            return QueryList<T>(sql, parms);
         }
     }
 }

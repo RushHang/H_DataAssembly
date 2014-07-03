@@ -44,19 +44,20 @@ namespace Test
             //TestUser user = new TestUser();
             //user.UserName = "tfg";
             //oper.Insere(user);
-            REPORT_DEPTModel tmodel = oper.Get<REPORT_DEPTModel>("3a2e388bb02446e8b2579b9e854641d7");
+            REPORT_DEPTModel tmodel = oper.Get<REPORT_DEPTModel>("b8a51aee154742efb22ba0c94060eaae");
             tmodel.Type_ID = "5";
             tmodel.REPORT_NAME = "棉毛裤";
             oper.Update(tmodel);
             int count = 0;
-            IList<REPORT_DEPTModel> list = oper.QueryList<REPORT_DEPTModel>(0, 10, out count,null);
+            IList<REPORT_DEPTModel> list = oper.QueryList<REPORT_DEPTModel>(1, 2, out count,null);
             //IList<TreeModel> lists = oper.QueryList<TreeModel>("select Id,Content from Tree");
             //IList<string> sl = dt.ToList<String>();
             //DataTable dt = lists.ToDataTable<TreeModel>();
-
-
-
-            //Console.Read();
+            foreach(var item in list)
+            {
+                Console.WriteLine(item.ID);
+            }
+            Console.Read();
         }
 
         static object ms()

@@ -97,7 +97,7 @@ namespace DataLibraries
                 {
                     if (!string.IsNullOrEmpty(item))
                     {
-                        sb.Append(item + sign);
+                        sb.Append(sign+"(" + item + ")");
                     }
                 }
             }

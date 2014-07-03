@@ -9,7 +9,7 @@ using DataLibraries.DBModelAttribute;
 
 namespace DataLibraries.Oracle
 {
-    public class OracleOperate:IDBOperate
+    public class OracleOperate : IDBOperate
     {
         public OracleOperate(string connstring, IDictionary<Type, ModelDataForHs> modeDIC)
         {
@@ -103,22 +103,22 @@ namespace DataLibraries.Oracle
             model.ClearState();
             return true;
         }
-        
+
         public bool Update(BaseModel model)
         {
             if (string.IsNullOrEmpty(model.ChangeProperty))
             {
                 return true;
             }
-           
+
             ModelDataForHs mdh = ModeDIC[model.GetType()];
-           
+
             List<IDataParameter> parms = new List<IDataParameter>();
             StringBuilder updateitem = new StringBuilder();
             foreach (ModelPropertyAndDelegate item in mdh.Properys)
             {
                 IDataParameter parm = new OracleParameter();
-                if (item.IsAutomatically == false && item.IsPrimaryKey == false&&model.ChangeProperty.Contains(item.PropertyName))
+                if (item.IsAutomatically == false && item.IsPrimaryKey == false && model.ChangeProperty.Contains(item.PropertyName))
                 {
                     updateitem.Append(string.Format("{0}={1},", item.ColumnName, mdh.Identification + item.ColumnName));
                     parm.ParameterName = item.ColumnName;
@@ -137,7 +137,7 @@ namespace DataLibraries.Oracle
             {
                 throw new Exception("未设置主键，无法通过此方法修改！");
             }
-            string pkstring="";
+            string pkstring = "";
             int i = 0;
             foreach (ModelPropertyAndDelegate item in pks)
             {
@@ -439,7 +439,32 @@ namespace DataLibraries.Oracle
 
         public IList<T> QueryList<T>(int pageIndex, int pageSize, out int count, string[] where, params IDataParameter[] parms) where T : BaseModel, new()
         {
-            throw new NotImplementedException();
+            IList<T> list = new List<T>();
+
+            ModelDataForHs mdh = ModeDIC[typeof(T)];
+            ModelPropertyAndDelegate pk;
+            try
+            {
+                pk = mdh.Properys.Where(x => x.IsPrimaryKey == true).First();
+            }
+            catch
+            {
+                throw new Exception("未设置主键，无法通过此方法查询！");
+            }
+            string sql = "";
+           
+            string conditions = where.ArrayToString(" and ");
+            if (pageSize == 0)
+            { sql = mdh.SelectAllSql + " where 1=1 " + conditions; }
+            else
+            {
+                pageIndex--;
+                sql = string.Format("select * from {0} where rowid in(select rid from (select rownum rn,t.* from({1}  order by {4} desc) t where rownum<={3}) where rn>{2}) order by {4} desc", mdh.TableName, mdh.SelectAllSql.Replace("select", "select rowid rid,") + " where 1=1 " + conditions, pageSize * pageIndex, pageSize * (pageIndex + 1), pk.ColumnName);
+            }
+            count = Convert.ToInt32(ExecuteScalar(string.Format("select count(1) from {0} {1}", mdh.TableName, conditions), parms));
+
+
+            return QueryList<T>(sql, parms);
         }
 
         #endregion
