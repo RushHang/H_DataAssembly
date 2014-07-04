@@ -11,3 +11,4 @@ C:\Users\Rush\Documents\GitHub\H_DataAssembly\DataLibraries\bin\Debug\MySql.Data
 C:\Users\Rush\Documents\GitHub\H_DataAssembly\DataLibraries\bin\Debug\System.Data.SQLite.dll
 C:\Users\Rush\Documents\GitHub\H_DataAssembly\DataLibraries\obj\Debug\DataLibraries.dll
 C:\Users\Rush\Documents\GitHub\H_DataAssembly\DataLibraries\obj\Debug\DataLibraries.pdb
+C:\Users\Rush\Documents\GitHub\H_DataAssembly\DataLibraries\obj\Debug\DataLibraries.csprojResolveAssemblyReference.cache

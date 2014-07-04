@@ -432,11 +432,6 @@ namespace DataLibraries.Oracle
             return new OracleParameter();
         }
 
-
-
-        #region IDBOperate 成员
-
-
         public IList<T> QueryList<T>(int pageIndex, int pageSize, out int count, string[] where, params IDataParameter[] parms) where T : BaseModel, new()
         {
             IList<T> list = new List<T>();
@@ -467,6 +462,5 @@ namespace DataLibraries.Oracle
             return QueryList<T>(sql, parms);
         }
 
-        #endregion
     }
 }

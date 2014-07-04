@@ -11,8 +11,6 @@ namespace DataLibraries
 
         MySql=4,
 
-        SqlLite=5,
-
-        Other=10
+        SqlLite=5
     }
 }
