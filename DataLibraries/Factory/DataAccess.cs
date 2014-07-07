@@ -8,6 +8,7 @@ using System.Data;
 
 namespace DataLibraries
 {
+    public delegate ModelDataForHs GetMDHDelegate(Type t);
     public class DataAccess
     {
 
@@ -15,6 +16,7 @@ namespace DataLibraries
         {
             modelDic = new Dictionary<Type, ModelDataForHs>();
             ConnCount = 10;//保存10个默认操作对象
+            GetMDH = new GetMDHDelegate(GetMDHFor);
         }
         /// <summary>
         /// 连接字符串
@@ -36,7 +38,7 @@ namespace DataLibraries
         /// 存放各个不同实例中的模型
         /// </summary>
         public static IDictionary<DataAccess, IDictionary<Type, ModelDataForHs>> Models = new Dictionary<DataAccess, IDictionary<Type, ModelDataForHs>>();
-
+        private GetMDHDelegate GetMDH;
         /// <summary>
         /// 加载映射
         /// </summary>
@@ -52,6 +54,11 @@ namespace DataLibraries
                 }
             }
             Models.Add(this, modelDic);
+        }
+
+        public ModelDataForHs GetMDHFor(Type t)
+        {
+            return modelDic[t];
         }
 
         private char identification;
@@ -123,10 +130,10 @@ namespace DataLibraries
         {
             switch (_datatype)
             {
-                case DBTypes.MsSql: return new MSSQL.MSSQLOperate(_connstring, modelDic);
-                case DBTypes.MySql: return new MySql.MySqlOperate(_connstring, modelDic);
-                case DBTypes.Oracle: return new Oracle.OracleOperate(_connstring, modelDic);
-                case DBTypes.SqlLite: return new SqlLite.SqlLiteOperate(_connstring, modelDic);
+                case DBTypes.MsSql: return new MSSQL.MSSQLOperate(_connstring,GetMDH);
+                case DBTypes.MySql: return new MySql.MySqlOperate(_connstring, GetMDH);
+                case DBTypes.Oracle: return new Oracle.OracleOperate(_connstring, GetMDH);
+                case DBTypes.SqlLite: return new SqlLite.SqlLiteOperate(_connstring, GetMDH);
             }
             return default(IDBOperate);
         }

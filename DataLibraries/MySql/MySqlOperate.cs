@@ -11,17 +11,15 @@ namespace DataLibraries.MySql
 {
     public class MySqlOperate : IDBOperate
     {
-
-        public MySqlOperate(string connstring, IDictionary<Type, ModelDataForHs> modeDIC)
+        private GetMDHDelegate GetMDH;
+        public MySqlOperate(string connstring, GetMDHDelegate modeDIC)
         {
 
             _Connection = new MySqlConnection(connstring);
-            ModeDIC = modeDIC;
+            GetMDH = modeDIC;
             _Command = _Connection.CreateCommand();
         }
 
-
-        public IDictionary<Type, ModelDataForHs> ModeDIC { get; set; }
 
         #region 私有对象
 
@@ -47,7 +45,7 @@ namespace DataLibraries.MySql
 
         public bool Insere(BaseModel model)
         {
-            ModelDataForHs mdh = ModeDIC[model.GetType()];
+            ModelDataForHs mdh = GetMDH(model.GetType());
 
             List<IDataParameter> parms = new List<IDataParameter>();
 
@@ -92,7 +90,7 @@ namespace DataLibraries.MySql
             {
                 return true;
             }
-            ModelDataForHs mdh = ModeDIC[model.GetType()];
+            ModelDataForHs mdh = GetMDH(model.GetType());
 
             List<IDataParameter> parms = new List<IDataParameter>();
             StringBuilder updateitem = new StringBuilder();
@@ -145,7 +143,7 @@ namespace DataLibraries.MySql
 
         public bool Delete(BaseModel model)
         {
-            ModelDataForHs mdh = ModeDIC[model.GetType()];
+            ModelDataForHs mdh = GetMDH(model.GetType());
 
             ModelPropertyAndDelegate[] pks;
             try
@@ -174,7 +172,7 @@ namespace DataLibraries.MySql
         public T Get<T>(object id) where T : BaseModel, new()
         {
             T model = new T();
-            ModelDataForHs mdh = ModeDIC[typeof(T)];
+            ModelDataForHs mdh = GetMDH(typeof(T));
             IDataParameter parm = new MySqlParameter();
             ModelPropertyAndDelegate pk;
             try
@@ -207,7 +205,7 @@ namespace DataLibraries.MySql
 
         private void Get(BaseModel model)
         {
-            ModelDataForHs mdh = ModeDIC[model.GetType()];
+            ModelDataForHs mdh = GetMDH(model.GetType());
             List<IDataParameter> list = new List<IDataParameter>();
 
             ModelPropertyAndDelegate[] pks;
@@ -271,7 +269,7 @@ namespace DataLibraries.MySql
         {
             IList<T> list = new List<T>();
 
-            ModelDataForHs mdh = ModeDIC[typeof(T)];
+            ModelDataForHs mdh = GetMDH(typeof(T));
             using (DataTable dt = QueryDt(sql, args))
             {
                 foreach (DataRow dr in dt.Rows)
@@ -416,7 +414,7 @@ namespace DataLibraries.MySql
         {
             IList<T> list = new List<T>();
 
-            ModelDataForHs mdh = ModeDIC[typeof(T)];
+            ModelDataForHs mdh = GetMDH(typeof(T));
 
             string sql = "";
             

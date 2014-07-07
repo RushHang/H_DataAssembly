@@ -11,14 +11,14 @@ namespace DataLibraries.MSSQL
 {
     public class MSSQLOperate : IDBOperate
     {
-        public MSSQLOperate(string connstring, IDictionary<Type, ModelDataForHs> modeDIC)
+        private GetMDHDelegate GetMDH;
+        public MSSQLOperate(string connstring, GetMDHDelegate modeDIC)
         {
             _Connection = new SqlConnection(connstring);
-            ModeDIC = modeDIC;
+            GetMDH = modeDIC;
             _Command = _Connection.CreateCommand();
         }
 
-        public IDictionary<Type, ModelDataForHs> ModeDIC { get; set; }
         #region 私有对象
 
         private SqlConnection _Connection;
@@ -44,7 +44,7 @@ namespace DataLibraries.MSSQL
 
         public bool Insere(BaseModel model)
         {
-            ModelDataForHs mdh = ModeDIC[model.GetType()];
+            ModelDataForHs mdh = GetMDH(model.GetType());
 
             List<IDataParameter> parms = new List<IDataParameter>();
 
@@ -105,7 +105,7 @@ namespace DataLibraries.MSSQL
                 return true;
             }
 
-            ModelDataForHs mdh = ModeDIC[model.GetType()];
+            ModelDataForHs mdh = GetMDH(model.GetType());
 
             List<IDataParameter> parms = new List<IDataParameter>();
             StringBuilder updateitem = new StringBuilder();
@@ -159,7 +159,7 @@ namespace DataLibraries.MSSQL
 
         public bool Delete(BaseModel model)
         {
-            ModelDataForHs mdh = ModeDIC[model.GetType()];
+            ModelDataForHs mdh = GetMDH(model.GetType());
 
             ModelPropertyAndDelegate[] pks;
             try
@@ -188,7 +188,7 @@ namespace DataLibraries.MSSQL
         public T Get<T>(object id) where T : BaseModel, new()
         {
             T model = new T();
-            ModelDataForHs mdh = ModeDIC[typeof(T)];
+            ModelDataForHs mdh = GetMDH(typeof(T));
             IDataParameter parm = new SqlParameter();
             ModelPropertyAndDelegate pk;
             try
@@ -247,7 +247,7 @@ namespace DataLibraries.MSSQL
         {
             IList<T> list = new List<T>();
 
-            ModelDataForHs mdh = ModeDIC[typeof(T)];
+            ModelDataForHs mdh = GetMDH(typeof(T));
             using (DataTable dt = QueryDt(sql, args))
             {
                 foreach (DataRow dr in dt.Rows)
@@ -393,7 +393,7 @@ namespace DataLibraries.MSSQL
         {
             IList<T> list = new List<T>();
 
-            ModelDataForHs mdh = ModeDIC[typeof(T)];
+            ModelDataForHs mdh = GetMDH(typeof(T));
             ModelPropertyAndDelegate pk;
             try
             {
@@ -419,5 +419,6 @@ namespace DataLibraries.MSSQL
 
             return QueryList<T>(sql, parms);
         }
+
     }
 }

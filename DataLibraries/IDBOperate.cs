@@ -10,7 +10,6 @@ namespace DataLibraries
 {
     public interface IDBOperate
     {
-        IDictionary<Type, ModelDataForHs> ModeDIC { get; set; }
 
         bool Insere(BaseModel model);
 

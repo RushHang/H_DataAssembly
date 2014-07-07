@@ -11,17 +11,15 @@ namespace DataLibraries.SqlLite
 {
     public class SqlLiteOperate : IDBOperate
     {
-
-        public SqlLiteOperate(string connstring, IDictionary<Type, ModelDataForHs> modeDIC)
+        private GetMDHDelegate GetMDH;
+        public SqlLiteOperate(string connstring, GetMDHDelegate modeDIC)
         {
 
             _Connection = new SQLiteConnection(connstring);
-            ModeDIC = modeDIC;
+            GetMDH = modeDIC;
             _Command = _Connection.CreateCommand();
         }
 
-
-        public IDictionary<Type, ModelDataForHs> ModeDIC { get; set; }
         #region 私有对象
 
         private SQLiteConnection _Connection;
@@ -46,7 +44,7 @@ namespace DataLibraries.SqlLite
 
         public bool Insere(BaseModel model)
         {
-            ModelDataForHs mdh = ModeDIC[model.GetType()];
+            ModelDataForHs mdh = GetMDH(model.GetType());
 
             List<IDataParameter> parms = new List<IDataParameter>();
 
@@ -90,7 +88,7 @@ namespace DataLibraries.SqlLite
                 return true;
             }
            
-            ModelDataForHs mdh = ModeDIC[model.GetType()];
+            ModelDataForHs mdh = GetMDH(model.GetType());
            
             List<IDataParameter> parms = new List<IDataParameter>();
             StringBuilder updateitem = new StringBuilder();
@@ -144,7 +142,7 @@ namespace DataLibraries.SqlLite
 
         public bool Delete(BaseModel model)
         {
-            ModelDataForHs mdh = ModeDIC[model.GetType()];
+            ModelDataForHs mdh = GetMDH(model.GetType());
 
             ModelPropertyAndDelegate[] pks;
             try
@@ -173,8 +171,8 @@ namespace DataLibraries.SqlLite
         public T Get<T>(object id) where T : BaseModel,new()
         {
             T model = new T();
-            
-            ModelDataForHs mdh = ModeDIC[typeof(T)];
+
+            ModelDataForHs mdh = GetMDH(typeof(T));
             IDataParameter parm = new SQLiteParameter();
             ModelPropertyAndDelegate pk;
             try
@@ -207,7 +205,7 @@ namespace DataLibraries.SqlLite
 
         private void Get(BaseModel model)
         {
-            ModelDataForHs mdh = ModeDIC[model.GetType()];
+            ModelDataForHs mdh = GetMDH(model.GetType());
             List<IDataParameter> list = new List<IDataParameter>();
 
             ModelPropertyAndDelegate[] pks;
@@ -271,7 +269,7 @@ namespace DataLibraries.SqlLite
         {
             IList<T> list = new List<T>();
 
-            ModelDataForHs mdh = ModeDIC[typeof(T)];
+            ModelDataForHs mdh = GetMDH(typeof(T));
             using (DataTable dt = QueryDt(sql, args))
             {
                 foreach (DataRow dr in dt.Rows)
@@ -416,7 +414,7 @@ namespace DataLibraries.SqlLite
         {
             IList<T> list = new List<T>();
 
-            ModelDataForHs mdh = ModeDIC[typeof(T)];
+            ModelDataForHs mdh = GetMDH(typeof(T));
 
             string sql = "";
             
