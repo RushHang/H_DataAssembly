@@ -71,10 +71,6 @@
     <Compile Include="SqlLite\SqlLiteOperate.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Datadll\System.Data.SQLite.dll_x64" />
-    <None Include="Datadll\System.Data.SQLite.dll_x86" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Datadll\MySql.Data.dll" />
     <Content Include="Datadll\System.Data.SQLite.dll" />
   </ItemGroup>
