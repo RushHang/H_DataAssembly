@@ -311,6 +311,10 @@ namespace DataLibraries.MySql
         {
             get
             {
+                if (_Connection.State != ConnectionState.Open)
+                {
+                    _Connection.Open();
+                }
                 if (_Transaction == null)
                 {
                     _Transaction = _Connection.BeginTransaction();
